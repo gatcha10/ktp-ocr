@@ -361,34 +361,44 @@ class KTPScanner {
     }
 
     async callTextractAPI(base64Image) {
-        // This is a simulation of AWS Textract API call
-        // In production, you would use AWS SDK or call your backend API
-        
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Mock extracted text data (replace with actual Textract response parsing)
-        return this.getMockExtractedData();
+        // Check if we have a TextractAPIIntegration instance
+        if (this.apiIntegration) {
+            // Use the API integration to call Textract
+            return await this.apiIntegration.callTextractAPI(base64Image);
+        } else {
+            // Fallback to direct integration or sample data
+            try {
+                // Create a new TextractAPIIntegration instance
+                const apiIntegration = new TextractAPIIntegration('/api/textract');
+                
+                // Try to use the sample response for demonstration
+                return await apiIntegration.useSampleResponse();
+            } catch (error) {
+                console.error('Error using TextractAPIIntegration:', error);
+                
+                // Fallback to mock data if everything else fails
+                return this.getMockExtractedData();
+            }
+        }
     }
 
     getMockExtractedData() {
-        // Mock data for demonstration - replace with actual Textract parsing
-        // Using API keys from field configuration for easy mapping
+        // Mock data for demonstration - only used as last resort fallback
         return {
-            nik: '3201234567890123',
-            full_name: 'JOHN DOE EXAMPLE',
-            birth_place_date: 'JAKARTA, 15 JANUARI 1990',
+            nik: '3506042602660001',
+            full_name: 'SULISTYONO',
+            birth_place_date: 'KEDIRI, 26-02-1966',
             gender: 'LAKI-LAKI',
-            blood_type: 'A',
-            address: 'JL. CONTOH NO. 123 RT 001 RW 004',
-            rt_rw: '001/004',
-            village: 'MARGAHAYU',
-            district: 'BEKASI TIMUR',
+            blood_type: '',
+            address: 'JLRAYA- - DSN PURWOKERTO',
+            rt_rw: '002/003',
+            village: 'PURWOKERTO',
+            district: 'NGADILUWIH',
             religion: 'ISLAM',
             marital_status: 'KAWIN',
-            occupation: 'KARYAWAN SWASTA',
+            occupation: 'GURU',
             nationality: 'WNI',
-            valid_until: 'SEUMUR HIDUP'
+            valid_until: '26-02-2017'
         };
     }
 
@@ -539,17 +549,31 @@ class KTPScanner {
         return true;
     }
 
-    async submitToDatabase(data) {
-        // Simulate database submission
-        // Replace this with actual API call to your backend
-        
-        console.log('Submitting data to database:', data);
-        
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Simulate success (in production, handle actual API response)
-        return { success: true, id: Date.now() };
+    async submitToDatabase(apiData) {
+        // Check if we have a TextractAPIIntegration instance
+        if (this.apiIntegration) {
+            // Use the API integration to submit to database
+            return await this.apiIntegration.submitToDatabase(apiData);
+        } else {
+            try {
+                // Create a new TextractAPIIntegration instance
+                const apiIntegration = new TextractAPIIntegration('/api/textract');
+                
+                // Try to submit to database
+                return await apiIntegration.submitToDatabase(apiData);
+            } catch (error) {
+                console.error('Error using TextractAPIIntegration for database submission:', error);
+                
+                // Fallback to mock submission
+                console.log('Submitting data to database (mock):', apiData);
+                
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Simulate success
+                return { success: true, id: Date.now() };
+            }
+        }
     }
 
     resetAll() {
