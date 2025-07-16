@@ -1,93 +1,212 @@
-# KTP OCR
+# 🆔 KTP Scanner - AWS Textract Frontend
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![AWS Textract](https://img.shields.io/badge/AWS-Textract-orange.svg)](https://aws.amazon.com/textract/)
 
+A modern, responsive web application for scanning Indonesian ID cards (KTP) using AWS Textract with **dynamic field configuration** system.
 
-## Getting started
+## 🚀 Features
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- 📱 **Mobile-First Design** - Optimized for mobile devices and desktop
+- 🖼️ **Drag & Drop Upload** - Easy file upload with drag and drop support
+- 🔍 **AWS Textract Integration** - Automatic text extraction from KTP images
+- ⚙️ **Dynamic Field Configuration** - Easily customizable form fields and API mapping
+- ✏️ **Editable Results** - Review and edit extracted data before submission
+- 💾 **Database Integration** - Submit processed data to your backend
+- 🌙 **Dark Mode Support** - Automatic dark mode based on system preference
+- 📱 **PWA Support** - Can be installed as a mobile app
+- ✅ **Form Validation** - Built-in validation with custom rules
+- 🔄 **API Mapping** - Automatic mapping between form fields and API format
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## 🏗️ Architecture
 
-## Add your files
+### Dynamic Field System
+- **Configuration-driven**: All fields defined in `field-config.js`
+- **API-ready**: Built-in mapping between form and API formats
+- **Validation**: Configurable validation rules and error messages
+- **Flexible**: Support for text, select, and textarea inputs
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
+### File Structure
 ```
-cd existing_repo
-git remote add origin https://codebunker.mov.co.id:7373/aws-ai-project/ktp-ocr.git
-git branch -M main
-git push -uf origin main
+├── index.html              # Main HTML file
+├── styles.css              # CSS styles with responsive design
+├── script.js               # Main JavaScript functionality
+├── field-config.js         # Dynamic field configuration
+├── api-example.js          # Real API integration examples
+├── manifest.json           # PWA manifest
+├── sw.js                   # Service worker for offline support
+├── README.md               # This file
+└── CONFIGURATION.md        # Field configuration guide
 ```
 
-## Integrate with your tools
+## How to Run
 
-- [ ] [Set up project integrations](https://codebunker.mov.co.id:7373/aws-ai-project/ktp-ocr/-/settings/integrations)
+### Method 1: Simple File Opening
+```bash
+open index.html
+```
 
-## Collaborate with your team
+### Method 2: Local Web Server (Recommended)
+```bash
+# Using Python
+python3 -m http.server 8000
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+# Using Node.js (if you have http-server installed)
+npx http-server
 
-## Test and Deploy
+# Using PHP
+php -S localhost:8000
+```
 
-Use the built-in continuous integration in GitLab.
+Then open `http://localhost:8000` in your browser.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## AWS Textract Integration
 
-***
+The current implementation includes a mock AWS Textract integration. To connect with real AWS Textract:
 
-# Editing this README
+### Option 1: Frontend Direct Integration (Not Recommended for Production)
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+```javascript
+// Install AWS SDK
+// npm install aws-sdk
 
-## Suggestions for a good README
+import AWS from 'aws-sdk';
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+// Configure AWS
+AWS.config.update({
+    accessKeyId: 'YOUR_ACCESS_KEY',
+    secretAccessKey: 'YOUR_SECRET_KEY',
+    region: 'us-east-1'
+});
 
-## Name
-Choose a self-explaining name for your project.
+const textract = new AWS.Textract();
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+async function callTextractAPI(base64Image) {
+    const params = {
+        Document: {
+            Bytes: Buffer.from(base64Image, 'base64')
+        },
+        FeatureTypes: ['FORMS', 'TABLES']
+    };
+    
+    try {
+        const result = await textract.analyzeDocument(params).promise();
+        return parseTextractResponse(result);
+    } catch (error) {
+        console.error('Textract error:', error);
+        throw error;
+    }
+}
+```
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### Option 2: Backend API Integration (Recommended)
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Create a backend API endpoint that handles AWS Textract calls:
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+```javascript
+async function callTextractAPI(base64Image) {
+    const response = await fetch('/api/textract', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            image: base64Image
+        })
+    });
+    
+    if (!response.ok) {
+        throw new Error('Failed to extract text');
+    }
+    
+    return await response.json();
+}
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## Database Integration
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Update the `submitToDatabase` function in `script.js`:
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+```javascript
+async function submitToDatabase(data) {
+    const response = await fetch('/api/ktp-data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    });
+    
+    if (!response.ok) {
+        throw new Error('Failed to save data');
+    }
+    
+    return await response.json();
+}
+```
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Customization
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+### Adding New Fields
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+1. Add the field to the field configuration in `field-config.js`
+2. Update the mock data in `getMockExtractedData()` function
+3. Add parsing logic in your Textract response handler
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+See [CONFIGURATION.md](CONFIGURATION.md) for detailed instructions.
+
+### Styling
+
+The application uses CSS custom properties for easy theming. Key variables:
+
+```css
+:root {
+    --primary-color: #4facfe;
+    --secondary-color: #00f2fe;
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --warning-color: #f59e0b;
+}
+```
+
+## Browser Support
+
+- Chrome/Edge 80+
+- Firefox 75+
+- Safari 13+
+- Mobile browsers (iOS Safari, Chrome Mobile)
+
+## Security Considerations
+
+1. **Never expose AWS credentials in frontend code**
+2. **Use HTTPS in production**
+3. **Implement proper file validation**
+4. **Sanitize user inputs**
+5. **Use CORS properly**
+6. **Implement rate limiting**
+
+## Production Deployment
+
+1. **Remove mock data** from `script.js`
+2. **Configure real AWS Textract integration**
+3. **Set up proper backend API**
+4. **Configure HTTPS**
+5. **Optimize images and assets**
+6. **Set up proper error logging**
+
+## Mobile Installation
+
+Users can install this as a PWA on their mobile devices:
+
+1. Open the website in mobile browser
+2. Tap "Add to Home Screen" (iOS) or "Install" (Android)
+3. The app will be available as a native-like application
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is open source and available under the MIT License.
+
+## Support
+
+For issues and questions, please create an issue in the repository or contact the development team.
