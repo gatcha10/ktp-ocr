@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>KTP Scanner - AWS Textract</title>
+    <meta name="description" content="Upload dan ekstrak data KTP menggunakan AWS Textract">
+    <meta name="theme-color" content="#4facfe">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="KTP Scanner">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🆔 KTP Scanner</h1>
+            <p>Upload KTP Anda untuk ekstraksi data otomatis</p>
+        </header>
+
+        <main>
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="upload-box" id="uploadBox">
+                    <div class="upload-content">
+                        <div class="upload-icon">📁</div>
+                        <p>Klik atau seret file KTP (JPG) ke sini</p>
+                        <input type="file" id="fileInput" accept="image/jpeg,image/jpg" hidden>
+                        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                            Pilih File
+                        </button>
+                    </div>
+                    <div class="preview-container" id="previewContainer" style="display: none;">
+                        <img id="imagePreview" alt="Preview KTP">
+                        <button class="remove-btn" onclick="removeImage()">✕</button>
+                    </div>
+                </div>
+                <div class="upload-actions">
+                    <button id="extractBtn" class="extract-btn" disabled onclick="extractData()">
+                        <span class="btn-text">Ekstrak Data</span>
+                        <span class="loading-spinner" style="display: none;">⏳</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Form Section -->
+            <section class="form-section" id="formSection" style="display: none;">
+                <h2>Data KTP</h2>
+                <form id="ktpForm">
+                    <!-- Form will be generated dynamically by JavaScript -->
+                </form>
+            </section>
+        </main>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script src="field-config.js"></script>
+    <script src="textract-parser.js"></script>
+    <script src="api-example.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
